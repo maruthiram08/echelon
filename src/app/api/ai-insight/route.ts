@@ -5,10 +5,6 @@ import OpenAI from 'openai';
 // or import from types/indicators
 import { Indicator } from '@/types/indicators';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(req: Request) {
     try {
         const { pillar, indicators } = await req.json();
@@ -19,6 +15,11 @@ export async function POST(req: Request) {
                 { status: 200 } // Return 200 to display error gracefully in UI
             );
         }
+
+        // Instantiate OpenAI client inside handler (not at module level) for build compatibility
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
 
         const indicatorSummary = indicators.map((ind: Indicator) =>
             `- ${ind.name}: ${ind.value !== null ? ind.value : 'N/A'} ${ind.unit} [Signal: ${ind.status.toUpperCase()}]`

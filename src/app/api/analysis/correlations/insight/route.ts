@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(req: Request) {
     try {
         const { correlations, regime } = await req.json();
@@ -19,6 +15,11 @@ export async function POST(req: Request) {
                 { status: 200 }
             );
         }
+
+        // Instantiate OpenAI client inside handler (not at module level) for build compatibility
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
 
         // Format correlations for the Prompt
         const correlationContext = correlations.map((c: any) =>
